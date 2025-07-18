@@ -1,4 +1,41 @@
+import { useState } from "react"
+import { Link } from 'react-router-dom'
+import clienteAxios from "../../config/axios";
+import Alerta from "../../components/Alerta";
+
 const Registro = () => {
+    const [nombre, setNombre] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [alerta, setAlerta] = useState({});
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if ([nombre, email, password].includes("")) {
+            setAlerta({
+                error: true,
+                msg: 'Completa los campos'
+            })
+            return
+        }
+
+        try {
+            const { data } = await clienteAxios.post('/usuarios/registrar', {nombre, email, password});
+            setAlerta({
+                msg: data.msg
+            })
+        } catch (error) {
+            setAlerta({
+                error: true,
+                msg: error.response.data.msg
+            })
+        }
+
+    }
+
+    const { msg } = alerta;
+
     return (
         <>
             {/* Logo y Título */}
@@ -22,7 +59,7 @@ const Registro = () => {
                 <p className="text-gray-600">Crea tu cuenta nueva</p>
             </div>
             {/* Formulario de Registro */}
-            <form id="registerForm" className="space-y-6">
+            <form id="registerForm" className="space-y-6" onSubmit={handleSubmit}>
                 {/* Campo Nombre */}
                 <div>
                     <label
@@ -48,6 +85,8 @@ const Registro = () => {
                             </svg>
                         </div>
                         <input
+                            value={nombre}
+                            onChange={e => setNombre(e.target.value)}
                             type="text"
                             id="nombre"
                             name="nombre"
@@ -85,6 +124,8 @@ const Registro = () => {
                             </svg>
                         </div>
                         <input
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                             type="email"
                             id="email"
                             name="email"
@@ -122,6 +163,8 @@ const Registro = () => {
                             </svg>
                         </div>
                         <input
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
                             type="password"
                             id="password"
                             name="password"
@@ -156,22 +199,9 @@ const Registro = () => {
                             </svg>
                         </button>
                     </div>
-                    <div id="password-error" className="hidden mt-1 text-sm text-red-600">
-                        La contraseña debe tener al menos 8 caracteres
-                    </div>
-                    {/* Indicador de fortaleza de contraseña */}
-                    <div className="mt-2">
-                        <div className="flex space-x-1">
-                            <div id="strength-1" className="h-1 w-1/4 bg-gray-200 rounded" />
-                            <div id="strength-2" className="h-1 w-1/4 bg-gray-200 rounded" />
-                            <div id="strength-3" className="h-1 w-1/4 bg-gray-200 rounded" />
-                            <div id="strength-4" className="h-1 w-1/4 bg-gray-200 rounded" />
-                        </div>
-                        <p id="strength-text" className="text-xs text-gray-500 mt-1">
-                            Ingresa una contraseña
-                        </p>
-                    </div>
+                    
                 </div>
+
                 {/* Botón de Registro */}
                 <div>
                     <button
@@ -202,72 +232,10 @@ const Registro = () => {
                         </svg>
                     </button>
                 </div>
-                {/* Mensaje de Error General */}
-                <div
-                    id="general-error"
-                    className="hidden p-3 bg-red-50 border border-red-200 rounded-lg"
-                >
-                    <div className="flex">
-                        <svg
-                            className="h-5 w-5 text-red-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                        </svg>
-                        <div className="ml-3">
-                            <p className="text-sm text-red-800" id="error-message">
-                                Error al crear la cuenta. Inténtalo de nuevo.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                {/* Mensaje de Éxito */}
-                <div
-                    id="success-message"
-                    className="hidden p-3 bg-green-50 border border-green-200 rounded-lg"
-                >
-                    <div className="flex">
-                        <svg
-                            className="h-5 w-5 text-green-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                        </svg>
-                        <div className="ml-3">
-                            <p className="text-sm text-green-800">
-                                ¡Cuenta creada exitosamente! Redirigiendo...
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                {/* Mensaje de Error/Exito */}
+                {msg && <Alerta alerta={alerta} />}
             </form>
-            {/* Términos y Condiciones */}
-            <div className="mt-6">
-                <p className="text-xs text-gray-500 text-center">
-                    Al registrarte, aceptas nuestros
-                    <a href="#" className="text-green-600 hover:text-green-700 underline">
-                        Términos de Servicio
-                    </a>
-                    y
-                    <a href="#" className="text-green-600 hover:text-green-700 underline">
-                        Política de Privacidad
-                    </a>
-                </p>
-            </div>
+
             {/* Divider */}
             <div className="mt-6">
                 <div className="relative">
@@ -281,12 +249,7 @@ const Registro = () => {
             </div>
             {/* Link de Login */}
             <div className="mt-6 text-center">
-                <a
-                    href="#"
-                    className="font-medium text-green-600 hover:text-green-700 transition-colors"
-                >
-                    Iniciar sesión aquí
-                </a>
+                <Link to="/" className="font-medium text-green-600 hover:text-green-700 transition-colors">Iniciar sesión aquí</Link>
             </div>
         </>
 

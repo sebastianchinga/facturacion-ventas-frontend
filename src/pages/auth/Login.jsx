@@ -1,4 +1,27 @@
+import { useState } from "react"
+import { Link } from 'react-router-dom'
+import Alerta from "../../components/Alerta";
+
 const Login = () => {
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [alerta, setAlerta] = useState({});
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if ([email, password].includes("")) {
+            setAlerta({
+                error: true,
+                msg: 'Completa los campos'
+            })
+            return
+        }
+
+    }
+
+    const { msg } = alerta;
+
     return (
         <>
             {/* Logo y Título */}
@@ -22,7 +45,7 @@ const Login = () => {
                 <p className="text-gray-600">Inicia sesión en tu cuenta</p>
             </div>
             {/* Formulario de Login */}
-            <form id="loginForm" className="space-y-6">
+            <form id="loginForm" className="space-y-6" onSubmit={handleSubmit}>
                 {/* Campo Email */}
                 <div>
                     <label
@@ -48,6 +71,8 @@ const Login = () => {
                             </svg>
                         </div>
                         <input
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                             type="email"
                             id="email"
                             name="email"
@@ -85,6 +110,8 @@ const Login = () => {
                             </svg>
                         </div>
                         <input
+                            value={password}
+                            onChange={e => setPassword(e.target.value)}
                             type="password"
                             id="password"
                             name="password"
@@ -125,12 +152,7 @@ const Login = () => {
                 </div>
                 {/* Olvidé contraseña */}
                 <div className="text-right">
-                    <a
-                        href="#"
-                        className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-                    >
-                        ¿Olvidaste tu contraseña?
-                    </a>
+                    <Link to='olvide-password' className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors">¿Olvidaste tu contraseña?</Link>
                 </div>
                 {/* Botón de Login */}
                 <div>
@@ -163,31 +185,7 @@ const Login = () => {
                     </button>
                 </div>
                 {/* Mensaje de Error General */}
-                <div
-                    id="general-error"
-                    className="hidden p-3 bg-red-50 border border-red-200 rounded-lg"
-                >
-                    <div className="flex">
-                        <svg
-                            className="h-5 w-5 text-red-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                        </svg>
-                        <div className="ml-3">
-                            <p className="text-sm text-red-800" id="error-message">
-                                Email o contraseña incorrectos
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                {msg && <Alerta alerta={alerta} />}
             </form>
             {/* Divider */}
             <div className="mt-6">
@@ -202,12 +200,7 @@ const Login = () => {
             </div>
             {/* Link de Registro */}
             <div className="mt-6 text-center">
-                <a
-                    href="#"
-                    className="font-medium text-blue-600 hover:text-blue-700 transition-colors"
-                >
-                    Crear una cuenta nueva
-                </a>
+                <Link to="registrar" className="font-medium text-blue-600 hover:text-blue-700 transition-colors">Crear una cuenta nueva</Link>
             </div>
         </>
 
