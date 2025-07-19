@@ -1,12 +1,15 @@
 import { useState } from "react"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Alerta from "../../components/Alerta";
+import clienteAxios from "../../config/axios";
 
 const Login = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [alerta, setAlerta] = useState({});
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -16,6 +19,16 @@ const Login = () => {
                 msg: 'Completa los campos'
             })
             return
+        }
+
+        try {
+            const { data } = await clienteAxios.post('/usuarios/', { email, password });
+            navigate('home');
+        } catch (error) {
+            setAlerta({
+                error: true,
+                msg: error.response.data.msg
+            })
         }
 
     }
