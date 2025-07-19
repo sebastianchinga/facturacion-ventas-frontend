@@ -5,25 +5,32 @@ import Registro from "./pages/auth/Registro"
 import OlvidePassword from "./pages/auth/OlvidePassword"
 import ConfirmarCuenta from "./pages/auth/ConfirmarCuenta"
 import CambiarPassword from "./pages/auth/CambiarPassword"
+import AdminLayout from "./layout/AdminLayout"
+import Home from "./pages/admin/Home"
+import NuevaVenta from "./pages/admin/NuevaVenta"
+import { AuthProvider } from "./context/AuthContext"
 
 function App() {
 
   return (
     <>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<AuthLayout />}>
-            <Route index element={<Login />} />
-            <Route path="registrar" element={<Registro />} />
-            <Route path="confirmar-cuenta/:token" element={<ConfirmarCuenta />} />
-            <Route path="olvide-password" element={<OlvidePassword />} />
-            <Route path="olvide-password/:token" element={<CambiarPassword />} />
-          </Route>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<AuthLayout />}>
+              <Route index element={<Login />} />
+              <Route path="registrar" element={<Registro />} />
+              <Route path="confirmar-cuenta/:token" element={<ConfirmarCuenta />} />
+              <Route path="olvide-password" element={<OlvidePassword />} />
+              <Route path="olvide-password/:token" element={<CambiarPassword />} />
+            </Route>
 
-          <Route>
-            <Route />
-          </Route>
-        </Routes>
+            <Route path="home" element={<AdminLayout />}>
+              <Route index element={<Home />} />
+              <Route path="nueva-venta" element={<NuevaVenta />} />
+            </Route>
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </>
   )
