@@ -1,4 +1,38 @@
+import { useState } from "react"
+import Alerta from "../../components/Alerta";
+import clienteAxios from "../../config/axios";
+
 const OlvidePassword = () => {
+    const [email, setEmail] = useState('');
+    const [alerta, setAlerta] = useState({});
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (email.trim() === '') {
+            setAlerta({
+                error: true,
+                msg: 'Completa el campo email'
+            })
+            return;
+        }
+
+        try {
+            const { data } = await clienteAxios.post('/usuarios/olvide-password', { email })
+            setAlerta({
+                msg: data.msg
+            })
+        } catch (error) {
+            setAlerta({
+                error: true,
+                msg: error.response.data.msg
+            })
+        }
+
+    }
+
+    const { msg } = alerta;
+
     return (
         <>
             {/* Logo y Título */}
@@ -23,32 +57,8 @@ const OlvidePassword = () => {
                     Ingresa tu email para restablecer tu contraseña
                 </p>
             </div>
-            {/* Instrucciones */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                <div className="flex">
-                    <svg
-                        className="h-5 w-5 text-blue-400 mt-0.5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                    </svg>
-                    <div className="ml-3">
-                        <p className="text-sm text-blue-800">
-                            Te enviaremos un enlace de recuperación a tu correo electrónico para
-                            que puedas crear una nueva contraseña.
-                        </p>
-                    </div>
-                </div>
-            </div>
             {/* Formulario de Recuperación */}
-            <form id="recoveryForm" className="space-y-6">
+            <form id="recoveryForm" className="space-y-6" onSubmit={handleSubmit}>
                 {/* Campo Email */}
                 <div>
                     <label
@@ -74,12 +84,13 @@ const OlvidePassword = () => {
                             </svg>
                         </div>
                         <input
+                            value={email}
+                            onChange={e => setEmail(e.target.value)}
                             type="email"
                             id="email"
                             name="email"
                             className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-colors"
                             placeholder="tu@email.com"
-                            required=""
                         />
                     </div>
                     <div id="email-error" className="hidden mt-1 text-sm text-red-600">
@@ -116,104 +127,9 @@ const OlvidePassword = () => {
                         </svg>
                     </button>
                 </div>
-                {/* Mensaje de Error General */}
-                <div
-                    id="general-error"
-                    className="hidden p-3 bg-red-50 border border-red-200 rounded-lg"
-                >
-                    <div className="flex">
-                        <svg
-                            className="h-5 w-5 text-red-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                        </svg>
-                        <div className="ml-3">
-                            <p className="text-sm text-red-800" id="error-message">
-                                No encontramos una cuenta con este email
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                {/* Mensaje de Éxito */}
-                <div
-                    id="success-message"
-                    className="hidden p-4 bg-green-50 border border-green-200 rounded-lg"
-                >
-                    <div className="flex">
-                        <svg
-                            className="h-5 w-5 text-green-400 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                        </svg>
-                        <div className="ml-3">
-                            <h3 className="text-sm font-medium text-green-800">
-                                ¡Email enviado exitosamente!
-                            </h3>
-                            <p className="text-sm text-green-700 mt-1">
-                                Revisa tu bandeja de entrada y sigue las instrucciones para
-                                restablecer tu contraseña.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                {/* Mensaje de Error/Exito */}
+                {msg && <Alerta alerta={alerta} />}
             </form>
-            {/* Información adicional después del éxito */}
-            <div id="additional-info" className="hidden mt-6 space-y-4">
-                {/* Reenviar email */}
-                <div className="text-center">
-                    <p className="text-sm text-gray-600 mb-2">¿No recibiste el email?</p>
-                    <button
-                        id="resendButton"
-                        className="text-sm font-medium text-purple-600 hover:text-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        <span id="resendText">Reenviar email</span>
-                        <span id="resendTimer" className="hidden">
-                            {" "}
-                            (30s)
-                        </span>
-                    </button>
-                </div>
-                {/* Consejos */}
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
-                    <div className="flex">
-                        <svg
-                            className="h-5 w-5 text-yellow-400 mt-0.5"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                            ></path>
-                        </svg>
-                        <div className="ml-3">
-                            <p className="text-xs text-yellow-800">
-                                <strong>Consejos:</strong> Revisa tu carpeta de spam. El email puede
-                                tardar unos minutos en llegar.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
             {/* Divider */}
             <div className="mt-8">
                 <div className="relative">
