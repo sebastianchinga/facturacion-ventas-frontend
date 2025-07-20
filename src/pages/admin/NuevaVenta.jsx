@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import useProductos from "../../hooks/useProductos"
 import { useEffect, useState } from "react";
 import clienteAxios from "../../config/axios";
@@ -8,8 +8,33 @@ import Item from "../../components/Item";
 
 const NuevaVenta = () => {
 
+    const navigate = useNavigate();
+
+    const [cliente, setCliente] = useState({
+        nombre: '',
+        email: '',
+        telefono: '',
+        dni: ''
+    })
+
     const { productos, setProductos } = useProductos();
-    const { productosSeleccionados } = useVenta();
+    const { productosSeleccionados, setProductosSeleccionados, calcularSubTotal, calcularIVA, calcularTotal } = useVenta();
+
+    const crearVenta = async (cliente, productos) => {
+        try {
+            const { data } = await clienteAxios.post('/ventas/', { cliente, productos, total: calcularTotal });
+            setProductosSeleccionados([]);
+            setCliente({
+                nombre: '',
+                email: '',
+                telefono: '',
+                dni: ''
+            })
+            navigate('/home');
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     useEffect(() => {
         const obtenerProductos = async () => {
@@ -41,12 +66,13 @@ const NuevaVenta = () => {
                                 Nombre del Cliente *
                             </label>
                             <input
+                                value={cliente.nombre}
+                                onChange={e => setCliente({ ...cliente, [e.target.name]: e.target.value })}
                                 type="text"
                                 id="cliente-nombre"
-                                name="cliente-nombre"
+                                name="nombre"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="Ingrese el nombre del cliente"
-                                required=""
                             />
                         </div>
                         <div>
@@ -57,9 +83,11 @@ const NuevaVenta = () => {
                                 Email (Opcional)
                             </label>
                             <input
+                                value={cliente.email}
+                                onChange={e => setCliente({ ...cliente, [e.target.name]: e.target.value })}
                                 type="email"
                                 id="cliente-email"
-                                name="cliente-email"
+                                name="email"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="cliente@email.com"
                             />
@@ -72,9 +100,11 @@ const NuevaVenta = () => {
                                 Teléfono (Opcional)
                             </label>
                             <input
+                                value={cliente.telefono}
+                                onChange={e => setCliente({ ...cliente, [e.target.name]: e.target.value })}
                                 type="tel"
                                 id="cliente-telefono"
-                                name="cliente-telefono"
+                                name="telefono"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder="+1 234 567 8900"
                             />
@@ -87,9 +117,11 @@ const NuevaVenta = () => {
                                 Documento (Opcional)
                             </label>
                             <input
+                                value={cliente.dni}
+                                onChange={e => setCliente({ ...cliente, [e.target.name]: e.target.value })}
                                 type="text"
                                 id="cliente-documento"
-                                name="cliente-documento"
+                                name="dni"
                                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                 placeholder={12345678}
                             />
@@ -150,28 +182,29 @@ const NuevaVenta = () => {
                         <div className="flex justify-between text-sm">
                             <span className="text-gray-600">Subtotal:</span>
                             <span id="subtotal" className="font-medium">
-                                $0.00
+                                ${calcularSubTotal}
                             </span>
                         </div>
                         <div className="flex justify-between text-sm">
                             <span className="text-gray-600">IVA (16%):</span>
                             <span id="iva" className="font-medium">
-                                $0.00
+                                ${calcularIVA}
                             </span>
                         </div>
                         <div className="flex justify-between text-lg font-bold border-t border-gray-200 pt-2">
                             <span>Total:</span>
                             <span id="total" className="text-blue-600">
-                                $0.00
+                                ${calcularTotal}
                             </span>
                         </div>
                     </div>
                     {/* Botones de Acción */}
                     <div className="mt-6 space-y-3">
                         <button
+                            onClick={() => crearVenta(cliente, productosSeleccionados)}
                             id="btn-crear-venta"
                             className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md font-medium transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                        // disabled=""
+                            disabled={productosSeleccionados.length === 0}
                         >
                             Crear Venta
                         </button>

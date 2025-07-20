@@ -1,5 +1,8 @@
+import useVenta from "../hooks/useVenta"
+
 const Item = ({ producto }) => {
     const { id, nombre, precio, cantidad, stock } = producto
+    const { aumentarCantidad, disminuirCantidad, eliminarProducto } = useVenta();
     return (
         <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <div className="flex-1">
@@ -12,7 +15,7 @@ const Item = ({ producto }) => {
             </div>
             <div className="flex items-center space-x-2">
                 <button
-                    onclick="cambiarCantidad('${producto.id}', ${producto.cantidad - 1})"
+                    onClick={() => disminuirCantidad(producto)}
                     className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm"
                 >
                     -
@@ -21,13 +24,13 @@ const Item = ({ producto }) => {
                     {cantidad}
                 </span>
                 <button
-                    onclick="cambiarCantidad('${producto.id}', ${producto.cantidad + 1})"
+                    onClick={() => aumentarCantidad(producto)}
                     className="w-6 h-6 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm"
                 >
                     +
                 </button>
                 <button
-                    onclick="eliminarProducto('${producto.id}')"
+                    onClick={() => eliminarProducto(producto)}
                     className="ml-2 text-red-500 hover:text-red-700"
                 >
                     <svg
