@@ -1,6 +1,23 @@
 import { Link } from "react-router-dom"
+import useProductos from "../../hooks/useProductos"
+import { useEffect } from "react";
+import clienteAxios from "../../config/axios";
 
 const NuevaVenta = () => {
+    const { productos, setProductos } = useProductos();
+
+    useEffect(() => {
+        const obtenerProductos = async () => {
+            try {
+                const { data } = await clienteAxios.get('/productos/');
+                setProductos(data);
+            } catch (error) {
+                setProductos([]);
+            }
+        }
+        obtenerProductos();
+    }, [])
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Sección Izquierda: Cliente y Productos */}
@@ -267,7 +284,7 @@ const NuevaVenta = () => {
                         <button
                             id="btn-crear-venta"
                             className="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-md font-medium transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
-                            // disabled=""
+                        // disabled=""
                         >
                             Crear Venta
                         </button>
