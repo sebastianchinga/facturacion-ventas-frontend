@@ -18,6 +18,29 @@ const Home = () => {
         }
         obtenerVentas()
     }, [])
+
+    const descarPDF = async (id) => {
+        try {
+            const response = await clienteAxios.get(`/pdf/${id}`, {
+                responseType: "blob"
+            })
+
+            const blob = new Blob([response.data], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'factura.pdf'; // nombre del archivo
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <>
             {/* Botón Nueva Venta */}
@@ -72,6 +95,7 @@ const Home = () => {
                         <tbody className="bg-white divide-y divide-gray-200">
                             {/* Fila 1 */}
                             {ventas.map(venta => (
+
                                 <tr className="hover:bg-gray-50" key={venta.id}>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                         0{venta.id}
@@ -86,7 +110,7 @@ const Home = () => {
                                         S/. {venta.total}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors duration-200 flex items-center space-x-1">
+                                        <button onClick={() => descarPDF(venta.id)} className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition-colors duration-200 flex items-center space-x-1">
                                             <svg
                                                 className="w-4 h-4"
                                                 fill="none"
@@ -141,96 +165,7 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-                {/* Ventas completadas */}
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <svg
-                                    className="h-6 w-6 text-green-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                        Completadas
-                                    </dt>
-                                    <dd className="text-lg font-medium text-gray-900">3</dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* Ventas pendientes */}
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <svg
-                                    className="h-6 w-6 text-yellow-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                        Pendientes
-                                    </dt>
-                                    <dd className="text-lg font-medium text-gray-900">1</dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {/* Ventas canceladas */}
-                <div className="bg-white overflow-hidden shadow rounded-lg">
-                    <div className="p-5">
-                        <div className="flex items-center">
-                            <div className="flex-shrink-0">
-                                <svg
-                                    className="h-6 w-6 text-red-400"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                                    />
-                                </svg>
-                            </div>
-                            <div className="ml-5 w-0 flex-1">
-                                <dl>
-                                    <dt className="text-sm font-medium text-gray-500 truncate">
-                                        Canceladas
-                                    </dt>
-                                    <dd className="text-lg font-medium text-gray-900">1</dd>
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
         </>
     )
