@@ -159,7 +159,7 @@ const Home = () => {
                                     <dt className="text-sm font-medium text-gray-500 truncate">
                                         Total Ventas
                                     </dt>
-                                    <dd className="text-lg font-medium text-gray-900">S/. {ventas.reduce((ac, venta) => ac + Number(venta.total), 0)}</dd>
+                                    <dd className="text-lg font-medium text-gray-900">S/. {parseFloat(ventas.reduce((ac, venta) => ac + Number(venta.total), 0)).toFixed(2)}</dd>
                                 </dl>
                             </div>
                         </div>

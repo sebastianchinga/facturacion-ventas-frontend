@@ -89,7 +89,7 @@ const ConfirmarCuenta = () => {
             {cuentaConfirmada && (
                 <div className="space-y-3">
                     {/* Botón Ir a Iniciar Sesión */}
-                    <Link className="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2 mt-2">
+                    <Link to="/" className="w-full bg-teal-600 hover:bg-teal-700 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center space-x-2 mt-2">
                         <svg
                             className="w-5 h-5"
                             fill="none"
