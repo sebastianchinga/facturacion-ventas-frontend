@@ -21,16 +21,20 @@ const Home = () => {
 
     const descarPDF = async (id) => {
         try {
-            const response = await clienteAxios.get(`/pdf/${id}`, {
+            // Ir a la url
+            const { data } = await clienteAxios.get(`/pdf/${id}`, {
+                // Configurar de tipo blob
                 responseType: "blob"
             })
+            // data es una respuesta tipo blob
 
-            const blob = new Blob([response.data], { type: 'application/pdf' });
+            // Creamos un nuevo blob con data y su type
+            const blob = new Blob([data], { type: 'application/pdf' });
             const url = window.URL.createObjectURL(blob);
 
             const link = document.createElement('a');
             link.href = url;
-            link.download = 'factura.pdf'; // nombre del archivo
+            link.download = `facturacion-venta-${id}-.pdf`; // nombre del archivo
             document.body.appendChild(link);
             link.click();
             link.remove();
@@ -165,7 +169,7 @@ const Home = () => {
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </>
     )

@@ -5,6 +5,7 @@ import clienteAxios from "../../config/axios";
 import Producto from "../../components/Producto";
 import useVenta from "../../hooks/useVenta";
 import Item from "../../components/Item";
+import Alerta from "../../components/Alerta";
 
 const NuevaVenta = () => {
 
@@ -17,20 +18,42 @@ const NuevaVenta = () => {
         dni: ''
     })
 
+    const [alerta, setAlerta] = useState({});
     const { productos, setProductos } = useProductos();
     const { productosSeleccionados, setProductosSeleccionados, calcularSubTotal, calcularIVA, calcularTotal } = useVenta();
 
     const crearVenta = async (cliente, productos) => {
+        if (Object.values(cliente).includes("")) {
+            setAlerta({
+                error: true,
+                msg: 'Coloca los datos del cliente'
+            })
+
+            setTimeout(() => {
+                setAlerta({});
+            }, 5000);
+            return;
+        }
+
         try {
-            const { data } = await clienteAxios.post('/ventas/', { cliente, productos, total: calcularTotal });
+            const { data } = await clienteAxios.post('/ventas', { cliente, productos, total: calcularTotal });
             setProductosSeleccionados([]);
+
             setCliente({
                 nombre: '',
                 email: '',
                 telefono: '',
                 dni: ''
             })
-            navigate('/home');
+
+            setAlerta({
+                msg: 'Venta realizada, espere...'
+            })
+
+            setTimeout(() => {
+                navigate('/home')
+            }, 3000);
+
         } catch (error) {
             console.log(error);
         }
@@ -48,6 +71,9 @@ const NuevaVenta = () => {
         obtenerProductos();
     }, [])
 
+    const { msg } = alerta
+
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Sección Izquierda: Cliente y Productos */}
@@ -57,6 +83,7 @@ const NuevaVenta = () => {
                     <h2 className="text-lg font-semibold text-gray-900 mb-4">
                         Información del Cliente
                     </h2>
+                    
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label
@@ -209,7 +236,9 @@ const NuevaVenta = () => {
                             Crear Venta
                         </button>
                         <Link to="/home" className="block bg-gray-500 hover:bg-gray-600 text-white text-center py-2 px-4 rounded-md font-medium transition-colors">Cancelar Venta</Link>
+                        {msg && <Alerta alerta={alerta} />}
                     </div>
+                    
                 </div>
             </div>
         </div>
